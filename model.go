@@ -1,4 +1,4 @@
-package goTabGo
+package gotabgo
 
 import (
 	"encoding/xml"
