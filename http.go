@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -32,10 +31,10 @@ func timeoutDialer(cTimeout time.Duration, rwTimeout time.Duration) func(net, ad
 // apps will set two OS variables:
 // atscale_http_sslcert - location of the http ssl cert
 // atscale_http_sslkey - location of the http ssl key
-func NewTimeoutClient(cTimeout time.Duration, rwTimeout time.Duration, useClientCerts bool) *http.Client {
-	certLocation := os.Getenv("atscale_http_sslcert")
-	keyLocation := os.Getenv("atscale_http_sslkey")
-	caFile := os.Getenv("atscale_ca_file")
+func (api *API) NewTimeoutClient(cTimeout time.Duration, rwTimeout time.Duration, useClientCerts bool) *http.Client {
+	certLocation := string(api.TlsCert.PrivateKey)
+	keyLocation := string(api.TlsCert.PublicKey)
+	caFile := string(api.TlsCert.Ca)
 	// default
 	tlsConfig := &tls.Config{InsecureSkipVerify: true}
 	if useClientCerts && len(certLocation) > 0 && len(keyLocation) > 0 {
@@ -64,6 +63,6 @@ func NewTimeoutClient(cTimeout time.Duration, rwTimeout time.Duration, useClient
 	}
 }
 
-func DefaultTimeoutClient() *http.Client {
-	return NewTimeoutClient(connectTimeOut, readWriteTimeout, false)
+func (api *API) DefaultTimeoutClient() *http.Client {
+	return api.NewTimeoutClient(connectTimeOut, readWriteTimeout, false)
 }

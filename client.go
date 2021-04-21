@@ -74,7 +74,7 @@ func (api *API) makeRequest(requestUrl string, method string, payload []byte, re
 			fmt.Printf("%v\n", string(payload))
 		}
 	}
-	client := DefaultTimeoutClient()
+	client := api.DefaultTimeoutClient()
 	var req *http.Request
 	if len(payload) > 0 {
 		var httpErr error

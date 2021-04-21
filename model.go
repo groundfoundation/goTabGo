@@ -7,22 +7,27 @@ import (
 )
 
 const DEFAULT_API_VERSION = "2.5"
-const BOUNDARY_STRING = "QKrAECL8TDG8cmJeeAvTcP728jogzmD3"
 
 type API struct {
 	Server    string
 	Version   string
-	Boundary  string
 	AuthToken string
 	SiteName  string
+	TlsCert   *TlsCertificate
 }
 
-func NewAPI(server string, version string, boundary string, siteName string) API {
+type TlsCertificate struct {
+	PrivateKey []byte
+	PublicKey  []byte
+	Ca         []byte
+}
+
+func NewAPI(server string, version string, siteName string, tlsCert *TlsCertificate) *API {
 	formatedServername := server
 	if strings.HasSuffix(server, "/") {
 		formatedServername = server[0 : len(server)-1]
 	}
-	return API{Server: formatedServername, Version: version, Boundary: boundary, SiteName: siteName}
+	return &API{Server: formatedServername, Version: version, SiteName: siteName, TlsCert: tlsCert}
 }
 
 type SigninRequest struct {
