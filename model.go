@@ -51,12 +51,14 @@ type ServerInfoResponse struct {
 }
 
 type ProductVersion struct {
-	Value string `json:"value"`
-	Build string `json:"build"`
+	XMLName xml.Name `json:"-" xml:"productVersion"`
+	Value   string   `json:"value" xml:",chardata"`
+	Build   string   `json:"build" xml:"build,attr"`
 }
 
 type ServerInfo struct {
-	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion,omitempty"`
+	XMLName        xml.Name       `json:"-" xml:"serverInfo"`
+	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion"`
 	RestApiVersion string         `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
 }
 

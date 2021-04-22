@@ -76,7 +76,7 @@ func (t *TabApi) ServerInfo() (si *ServerInfo, err error) {
 	log.WithField("method", "ServerInfo").
 		Debug("response:\n", string(body))
 	// unmarshal this
-	var sir ServerInfoResponse
+	var sir TsResponse
 	switch t.ContentType {
 	case Xml:
 		err = xml.Unmarshal(body, &sir)
