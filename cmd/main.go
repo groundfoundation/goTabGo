@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -47,7 +48,12 @@ func main() {
 	}
 
 	log.Debug("tabApi", tabApi)
-	tabApi.ServerInfo()
+	si, e := tabApi.ServerInfo()
+	if e != nil {
+		log.Fatal(e)
+	}
+	siFmt, _ := json.MarshalIndent(si, "", "\t")
+	fmt.Printf("Server Info:\n%s", siFmt)
 
 }
 
