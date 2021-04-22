@@ -45,9 +45,14 @@ type ServerInfoResponse struct {
 	ServerInfo ServerInfo `json:"serverInfo,omitempty" xml:"serverInfo,omitempty"`
 }
 
+type ProductVersion struct {
+	Value string `json:"value"`
+	Build string `json:"build"`
+}
+
 type ServerInfo struct {
-	ProductVersion string `json:"productVersion,omitempty" xml:"productVersion,omitempty"`
-	RestApiVersion string `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
+	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion,omitempty"`
+	RestApiVersion string         `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
 }
 
 type Credentials struct {
