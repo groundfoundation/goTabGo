@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"mime"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -55,7 +56,27 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 		return err
 	}
 	// Post this to the endpoint
-	t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+	log.WithField("method", "Signin").Debug(resp)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	log.WithField("method", "Signin").WithField("id", "body").Debug(string(body))
+	var tr TsResponse
+	log.Debug("header", resp.Header.Get("Content-Type"))
+	contentType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+	switch contentType {
+	case "application/xml":
+		err = xml.Unmarshal(body, &tr)
+	case "application/json":
+		err = json.Unmarshal(body, &tr)
+	}
+
+	log.WithField("method", "Signin").
+		WithField("id", "unmarshal tr").Debug(tr)
+	t.c.authToken = tr.Credentials.Token
 
 	return nil
 }
