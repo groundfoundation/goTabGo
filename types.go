@@ -5,7 +5,7 @@ import "encoding/xml"
 type ContentType int
 
 const (
-	Json = iota
+	Json ContentType = iota
 	Xml
 )
 
@@ -24,5 +24,6 @@ type TabApi struct {
 type TsResponse struct {
 	XMLName xml.Name `json:"-" xml:"tsResponse"`
 
-	ServerInfo ServerInfo `json:"serverInfo" xml:"serverInfo"`
+	ServerInfo  ServerInfo  `json:"serverInfo" xml:"serverInfo"`
+	Credentials Credentials `json:"credentials" xml:"credentials"`
 }
