@@ -3,6 +3,7 @@ package gotabgo
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 
@@ -59,7 +60,7 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	return nil
 }
 
-func (t *TabApi) ServerInfo() (*ServerInfo, error) {
+func (t *TabApi) ServerInfo() (si *ServerInfo, err error) {
 	//TODO: figure out how to use the apiversion instead of hard coding
 	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), "2.4")
 	r, e := t.c.Get(url)
@@ -68,12 +69,29 @@ func (t *TabApi) ServerInfo() (*ServerInfo, error) {
 		return nil, e
 	}
 
-	log.WithField("method", "ServerInfo").Debug("response:", r)
+	log.WithField("method", "ServerInfo").
+		Debug("response:\n", r)
 	defer r.Body.Close()
-	body, e := ioutil.ReadAll(r.Body)
-	log.WithField("method", "ServerInfo").Debug("response", string(body))
+	body, err := ioutil.ReadAll(r.Body)
+	log.WithField("method", "ServerInfo").
+		Debug("response:\n", string(body))
+	// unmarshal this
+	var sir ServerInfoResponse
+	switch t.ContentType {
+	case Xml:
+		err = xml.Unmarshal(body, &sir)
+	case Json:
+		err = json.Unmarshal(body, &sir)
+	}
+	if err != nil {
+		return
+	}
+	log.WithField("method", "ServerInfo").
+		Debug("ServerInfoResponse:\n", sir)
 
-	return nil, nil
+	si = &sir.ServerInfo
+
+	return
 
 }
 
