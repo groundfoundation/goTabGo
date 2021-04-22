@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/groundfoundation/gotabgo"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/term"
 )
 
@@ -19,12 +19,14 @@ func main() {
 		fmt.Print("Enter Server: ")
 		server, _ = reader.ReadString('\n')
 	}
+	log.Debug("Server: ", server)
 
 	user = os.Getenv("TAB_USER")
 	if user == "" {
 		fmt.Print("Enter User: ")
 		user, _ = reader.ReadString('\n')
 	}
+	log.Debug("User: ", user)
 
 	password = os.Getenv("TAB_PASS")
 	if password == "" {
@@ -35,12 +37,28 @@ func main() {
 		}
 		password = string(pwd)
 	}
+	log.Debug("Password value obtained")
 
-	fmt.Printf("Server is: %s", server)
+	fmt.Printf("\nServer is: %s", server)
 
-	_, e := gotabgo.NewTabApi(server, "2.8", false, gotabgo.Json)
+	tabApi, e := gotabgo.NewTabApi(server, "2.8", true, gotabgo.Json)
 	if e != nil {
 		log.Fatal(e)
 	}
 
+	log.Debug("tabApi", tabApi)
+	tabApi.ServerInfo()
+
+}
+
+func init() {
+	var dev bool
+	// Determine where we are running
+	if _, exists := os.LookupEnv("DEVELOPMENT"); exists {
+		dev = true
+	}
+
+	if dev {
+		log.SetLevel(log.DebugLevel)
+	}
 }
