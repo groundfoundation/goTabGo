@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"os"
 
@@ -59,6 +60,7 @@ func main() {
 		log.Fatal(e)
 	}
 	siFmt, _ := json.MarshalIndent(si, "", "\t")
+	siXml, _ := xml.MarshalIndent(si, "", "\t")
 	fmt.Printf("Server Info:\n%s", siFmt)
 }
 
