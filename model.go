@@ -87,10 +87,30 @@ type SiteUsage struct {
 	Storage       int `json:"storage" xml:"storage,attr"`
 }
 
+type CreateSiteRequest struct {
+	Request Site `json:"site,omitempty" xml:"site,omitempty"`
+}
+
+func (req CreateSiteRequest) XML() ([]byte, error) {
+	tmp := struct {
+		CreateSiteRequest
+		XMLName struct{} `xml:"tsRequest"`
+	}{CreateSiteRequest: req}
+	return xml.MarshalIndent(tmp, "", "   ")
+}
+
+type CreateSiteResponse struct {
+	Site Site `json:"site,omitempty" xml:"site,omitempty"`
+}
+
 type ConnectionCredentials struct {
 	Name     string `json:"name,omitempty" xml:"name,attr,omitempty"`
 	Password string `json:"password,omitempty" xml:"password,attr,omitempty"`
 	Embed    bool   `json:"embed" xml:"embed,attr"`
+}
+
+func (s Site) XML() ([]byte, error) {
+	return xml.MarshalIndent(s, "", "   ")
 }
 
 type GoDie struct {
