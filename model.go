@@ -58,11 +58,12 @@ type ServerInfo struct {
 }
 
 type Credentials struct {
-	Name        string `json:"name,omitempty" xml:"name,attr,omitempty"`
-	Password    string `json:"password,omitempty" xml:"password,attr,omitempty"`
-	Token       string `json:"token,omitempty" xml:"token,attr,omitempty"`
-	Site        *Site  `json:"site,omitempty" xml:"site,omitempty"`
-	Impersonate *User  `json:"user,omitempty" xml:"user,omitempty"`
+	XMLName     xml.Name `json:"-" xml:"credentials"`
+	Name        string   `json:"name,omitempty" xml:"name,attr,omitempty"`
+	Password    string   `json:"password,omitempty" xml:"password,attr,omitempty"`
+	Token       string   `json:"token,omitempty" xml:"token,attr,omitempty"`
+	Site        *Site    `json:"site,omitempty" xml:"site,omitempty"`
+	Impersonate *User    `json:"user,omitempty" xml:"user,omitempty"`
 }
 
 type User struct {
