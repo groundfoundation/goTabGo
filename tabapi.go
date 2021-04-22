@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func NewTabApi(server, version string, useTLS bool, cType ContentType) (*TabApi, error) {
@@ -54,6 +57,24 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
 
 	return nil
+}
+
+func (t *TabApi) ServerInfo() (*ServerInfo, error) {
+	//TODO: figure out how to use the apiversion instead of hard coding
+	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), "2.4")
+	r, e := t.c.Get(url)
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+
+	log.WithField("method", "ServerInfo").Debug("response:", r)
+	defer r.Body.Close()
+	body, e := ioutil.ReadAll(r.Body)
+	log.WithField("method", "ServerInfo").Debug("response", string(body))
+
+	return nil, nil
+
 }
 
 func (t *TabApi) getUrl() string {
