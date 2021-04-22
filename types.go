@@ -3,12 +3,12 @@ package gotabgo
 type ContentType int
 
 const (
-	Xml = iota
-	Json
+	Json = iota
+	Xml
 )
 
 func (r ContentType) String() string {
-	return [...]string{"application/xml", "application/json"}[r]
+	return [...]string{"application/json", "application/xml"}[r]
 }
 
 type TabApi struct {
