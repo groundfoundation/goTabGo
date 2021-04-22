@@ -58,6 +58,12 @@ func main() {
 	fmt.Printf("Server Info:\n%s", siFmt)
 	fmt.Printf("Server Info:\n%s", siXml)
 
+	// Let's login!
+	e = tabApi.Signin(user, password, "", "")
+	if e != nil {
+		log.Fatal(e)
+	}
+
 }
 
 func init() {
