@@ -135,6 +135,8 @@ func (t *TabApi) getUrl() string {
 	return url
 }
 
+// getPayload is a utility function to convert a Go struct into a serialized
+// form for a HTTP POST.
 func getPayload(thingToEncode interface{}, contentType ContentType) (payload []byte, err error) {
 	switch contentType {
 	case Xml:
@@ -169,7 +171,6 @@ func (t *TabApi) CreateSite(siteName string) (st *model.SiteType, err error) {
 	defer r.Body.Close()
 	var tResponse model.TsResponse
 
-	createSiteResponse := CreateSiteResponse{}
 	body, e := ioutil.ReadAll(r.Body)
 	log.WithField("method", "CreateSite").Debug("response", string(body))
 
@@ -186,5 +187,5 @@ func (t *TabApi) CreateSite(siteName string) (st *model.SiteType, err error) {
 	}
 	log.WithField("method", "CreateSite").Debugf("Error: Code = %d Status = %s", r.StatusCode, r.Status)
 
-	return &createSiteResponse.Site, err
+	return &tResponse.Site, err
 }
