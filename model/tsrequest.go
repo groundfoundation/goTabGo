@@ -6,4 +6,5 @@ import "encoding/xml"
 type TsRequest struct {
 	XMLName     xml.Name    `json:"-" xml:"tsRequest"`
 	Credentials Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
+	Site        SiteType    `json:"site,omitempty" xml:"site,omitempty"`
 }
