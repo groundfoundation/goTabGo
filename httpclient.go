@@ -3,6 +3,8 @@ package gotabgo
 import (
 	"io"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -29,10 +31,11 @@ func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.R
 		return nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
-	return c.c.Do(req)
+	return c.Do(req)
 }
 
 func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
+	log.Debug("Header: ", TABLEAU_AUTH_HEADER, c.authToken)
 	if c.authToken != "" {
 		req.Header.Add(TABLEAU_AUTH_HEADER, c.authToken)
 	}
