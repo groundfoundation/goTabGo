@@ -27,20 +27,13 @@ type SiteType struct {
 	StorageQuota int      `json:"storageQuota,omitempty" xml:"storageQuota,attr,omitempty"`
 	State        string   `json:"state,omitempty" xml:"state,attr,omitempty"`
 	StatusReason string   `json:"statusReason,omitempty" xml:"statusReason,attr,omitempty"`
-	// Usage        *Usage   `json:"usage,omitempty" xml:"usage,omitempty"`
-	Usage struct {
+	Usage        struct {
 		NumUsers     uint `json:"numUsers" xml:"numUsers,attr"`
 		NumCreators  uint `json:"numCreators,omitempty" xml:"numCreators,omitempty,attr"`
 		NumExplorers uint `json:"numExplorers,omitempty" xml:"numExplorers,omitempty,attr"`
 		NumViewers   uint `json:"numViewers,omitempty" xml:"numViewers,omitempty,attr"`
 		Storage      uint `json:"storage" xml:"storage,attr"`
 	} `json:"usage,omitempty" xml:"usage,omitempty"`
-}
-
-type Usage struct {
-	XMLName       xml.Name `json:"-" xml:"usage"`
-	NumberOfUsers int      `json:"number-of-users" xml:"number-of-users,attr"`
-	Storage       int      `json:"storage" xml:"storage,attr"`
 }
 
 type Credentials struct {
