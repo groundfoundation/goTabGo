@@ -185,7 +185,7 @@ func (t *TabApi) CreateSite(site model.SiteType) (st *model.SiteType, err error)
 	payload, err = getPayload(tsRequest, t.c.acceptType)
 	log.WithField("method", "CreateSite").Debug("payload", string(payload))
 	log.WithField("method", "CreateSite").WithField("id", "Token").Debug(t.c.authToken)
-	r, e := t.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	r, e := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
 
 	if e != nil {
 		log.Error(e)
