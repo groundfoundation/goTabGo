@@ -45,17 +45,25 @@ type ServerInfoResponse struct {
 	ServerInfo ServerInfo `json:"serverInfo,omitempty" xml:"serverInfo,omitempty"`
 }
 
+type ProductVersion struct {
+	XMLName xml.Name `json:"-" xml:"productVersion"`
+	Value   string   `json:"value" xml:",chardata"`
+	Build   string   `json:"build" xml:"build,attr"`
+}
+
 type ServerInfo struct {
-	ProductVersion string `json:"productVersion,omitempty" xml:"productVersion,omitempty"`
-	RestApiVersion string `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
+	XMLName        xml.Name       `json:"-" xml:"serverInfo"`
+	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion"`
+	RestApiVersion string         `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
 }
 
 type Credentials struct {
-	Name        string `json:"name,omitempty" xml:"name,attr,omitempty"`
-	Password    string `json:"password,omitempty" xml:"password,attr,omitempty"`
-	Token       string `json:"token,omitempty" xml:"token,attr,omitempty"`
-	Site        *Site  `json:"site,omitempty" xml:"site,omitempty"`
-	Impersonate *User  `json:"user,omitempty" xml:"user,omitempty"`
+	XMLName     xml.Name `json:"-" xml:"credentials"`
+	Name        string   `json:"name,omitempty" xml:"name,attr,omitempty"`
+	Password    string   `json:"password,omitempty" xml:"password,attr,omitempty"`
+	Token       string   `json:"token,omitempty" xml:"token,attr,omitempty"`
+	Site        *Site    `json:"site,omitempty" xml:"site,omitempty"`
+	Impersonate *User    `json:"user,omitempty" xml:"user,omitempty"`
 }
 
 type User struct {

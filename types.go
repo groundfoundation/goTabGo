@@ -1,9 +1,11 @@
 package gotabgo
 
+import "encoding/xml"
+
 type ContentType int
 
 const (
-	Json = iota
+	Json ContentType = iota
 	Xml
 )
 
@@ -17,4 +19,11 @@ type TabApi struct {
 	ApiVersion  string
 	ContentType ContentType
 	c           *httpClient
+}
+
+type TsResponse struct {
+	XMLName xml.Name `json:"-" xml:"tsResponse"`
+
+	ServerInfo  ServerInfo  `json:"serverInfo" xml:"serverInfo"`
+	Credentials Credentials `json:"credentials" xml:"credentials"`
 }

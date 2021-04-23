@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"os"
 
@@ -47,13 +49,26 @@ func main() {
 
 	fmt.Printf("\nServer is: %s", server)
 
-	tabApi, e := gotabgo.NewTabApi(server, apiVer, true, gotabgo.Json)
+	tabApi, e := gotabgo.NewTabApi(server, apiVer, true, gotabgo.Xml)
 	if e != nil {
 		log.Fatal(e)
 	}
 
 	log.Debug("tabApi", tabApi)
-	tabApi.ServerInfo()
+	si, e := tabApi.ServerInfo()
+	if e != nil {
+		log.Fatal(e)
+	}
+	siFmt, _ := json.MarshalIndent(si, "", "\t")
+	siXml, _ := xml.MarshalIndent(si, "", "\t")
+	fmt.Printf("Server Info:\n%s", siFmt)
+	fmt.Printf("Server Info:\n%s", siXml)
+
+	// Let's login!
+	e = tabApi.Signin(user, password, "", "")
+	if e != nil {
+		log.Fatal(e)
+	}
 	tabApi.CreateSite("testSite")
 
 }
