@@ -65,23 +65,6 @@ func (api *API) ServerInfo() (ServerInfo, error) {
 	return retval.ServerInfo, err
 }
 
-func (api *API) CreateSite(siteName string) (*Site, error) {
-	url := fmt.Sprintf("%s/api/%s/sites", api.Server, api.Version)
-	site := Site{
-		Name: siteName,
-	}
-	createSiteRequest := CreateSiteRequest{Request: site}
-	xmlRep, err := createSiteRequest.XML()
-	if err != nil {
-		return nil, err
-	}
-	headers := make(map[string]string)
-	headers[content_type_header] = application_xml_content_type
-	createSiteResponse := CreateSiteResponse{}
-	err = api.makeRequest(url, POST, xmlRep, &createSiteResponse, headers, connectTimeOut, readWriteTimeout)
-	return &createSiteResponse.Site, err
-}
-
 func (api *API) makeRequest(requestUrl string, method string, payload []byte, result interface{}, headers map[string]string,
 	cTimeout time.Duration, rwTimeout time.Duration) error {
 	var debug = false

@@ -86,3 +86,31 @@ func (t *TabApi) getUrl() string {
 
 	return url
 }
+
+func (t *TabApi) CreateSite(siteName string) (*Site, error) {
+	url := fmt.Sprintf("%s/api/%s/sites", t.Server, t.ApiVersion)
+	log.WithField("method", "CreateSite").Debug("url", string(url))
+	site := Site{
+		Name:       siteName,
+		ContentUrl: siteName,
+	}
+	createSiteRequest := CreateSiteRequest{Request: site}
+	xmlRep, err := createSiteRequest.XML()
+	if err != nil {
+		return nil, err
+	}
+	r, e := t.c.Post(url, "applications_xml", bytes.NewBuffer(xmlRep))
+	log.WithField("method", "CreateSite").Debug("response", r)
+	createSiteResponse := CreateSiteResponse{}
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+	log.WithField("method", "CreateSite").Debug("response:", r)
+	defer r.Body.Close()
+	body, e := ioutil.ReadAll(r.Body)
+	log.WithField("method", "CreateSite").Debug("response", string(body))
+
+	return nil, nil
+	return &createSiteResponse.Site, err
+}
