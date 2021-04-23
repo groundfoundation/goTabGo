@@ -77,6 +77,8 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	log.WithField("method", "Signin").
 		WithField("id", "unmarshal tr").Debug(tr)
 	t.c.authToken = tr.Credentials.Token
+	log.WithField("method", "Signin").
+		WithField("id", "Token").Debug(t.c.authToken)
 
 	return nil
 }
@@ -127,17 +129,20 @@ func (t *TabApi) getUrl() string {
 }
 
 func (t *TabApi) CreateSite(siteName string) (*Site, error) {
-	url := fmt.Sprintf("%s/api/%s/sites", t.Server, t.ApiVersion)
-	log.WithField("method", "CreateSite").Debug("url", string(url))
+	url := fmt.Sprintf("%s/api/%s/sites", t.getUrl(), t.ApiVersion)
+	log.WithField("method", "CreateSite").Debug("url: ", string(url))
 	site := Site{
 		Name:       siteName,
 		ContentUrl: siteName,
 	}
 	createSiteRequest := CreateSiteRequest{Request: site}
 	xmlRep, err := createSiteRequest.XML()
+	log.WithField("method", "CreateSite").Debug("xml", xmlRep)
 	if err != nil {
 		return nil, err
 	}
+	log.WithField("method", "CreateSite").
+		WithField("id", "Token").Debug(t.c.authToken)
 	r, e := t.c.Post(url, "applications_xml", bytes.NewBuffer(xmlRep))
 	log.WithField("method", "CreateSite").Debug("response", r)
 	createSiteResponse := CreateSiteResponse{}

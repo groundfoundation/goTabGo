@@ -49,7 +49,7 @@ func main() {
 
 	fmt.Printf("\nServer is: %s", server)
 
-	tabApi, e := gotabgo.NewTabApi(server, apiVer, true, gotabgo.Json)
+	tabApi, e := gotabgo.NewTabApi(server, apiVer, true, gotabgo.Xml)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -61,7 +61,15 @@ func main() {
 	}
 	siFmt, _ := json.MarshalIndent(si, "", "\t")
 	siXml, _ := xml.MarshalIndent(si, "", "\t")
+	fmt.Printf("Server Info:\n%s", siFmt)
 	fmt.Printf("Server Info:\n%s", siXml)
+
+	// Let's login!
+	e = tabApi.Signin(user, password, "", "")
+	if e != nil {
+		log.Fatal(e)
+	}
+	tabApi.CreateSite("testSite")
 
 	// Let's login!
 	e = tabApi.Signin(user, password, "", "")
