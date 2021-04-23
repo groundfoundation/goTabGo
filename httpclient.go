@@ -10,7 +10,7 @@ const (
 )
 
 type httpClient struct {
-	c          http.Client
+	client     http.Client
 	authToken  string
 	acceptType ContentType
 }
@@ -37,5 +37,5 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		req.Header.Add(TABLEAU_AUTH_HEADER, c.authToken)
 	}
 	req.Header.Add("Accept", c.acceptType.String())
-	return c.c.Do(req)
+	return c.client.Do(req)
 }

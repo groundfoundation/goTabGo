@@ -69,12 +69,9 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
-	tabApi.CreateSite("testSite")
-
-	// Let's login!
-	e = tabApi.Signin(user, password, "", "")
-	if e != nil {
-		log.Fatal(e)
+	_, err := tabApi.CreateSite("testSite1")
+	if err != nil {
+		log.Error(err.Error())
 	}
 }
 

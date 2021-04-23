@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"mime"
+	"net/http"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -143,15 +144,18 @@ func (t *TabApi) CreateSite(siteName string) (*Site, error) {
 	}
 	log.WithField("method", "CreateSite").
 		WithField("id", "Token").Debug(t.c.authToken)
-	r, e := t.c.Post(url, "applications_xml", bytes.NewBuffer(xmlRep))
-	log.WithField("method", "CreateSite").Debug("response", r)
-	createSiteResponse := CreateSiteResponse{}
+	r, e := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(xmlRep))
+
 	if e != nil {
 		log.Error(e)
 		return nil, e
 	}
-	log.WithField("method", "CreateSite").Debug("response:", r)
+	if r.StatusCode != http.StatusCreated {
+		return nil, &ApiError{r.StatusCode, r.Status}
+	}
+	log.WithField("method", "CreateSite").Debugf("Error: Code = %d Status = %s", r.StatusCode, r.Status)
 	defer r.Body.Close()
+	createSiteResponse := CreateSiteResponse{}
 	body, e := ioutil.ReadAll(r.Body)
 	log.WithField("method", "CreateSite").Debug("response", string(body))
 
