@@ -147,12 +147,12 @@ func getPayload(thingToEncode interface{}, contentType ContentType) (payload []b
 	return
 }
 
-func (t *TabApi) CreateSite(siteName string) (st *model.SiteType, err error) {
+func (t *TabApi) CreateSite(siteName string, siteUrl string) (st *model.SiteType, err error) {
 	url := fmt.Sprintf("%s/api/%s/sites", t.getUrl(), t.ApiVersion)
 	log.WithField("method", "CreateSite").Debug("url: ", string(url))
 	site := model.SiteType{
 		Name:       siteName,
-		ContentUrl: siteName,
+		ContentUrl: siteUrl,
 	}
 	var tsRequest model.TsRequest
 	tsRequest.Site = site
