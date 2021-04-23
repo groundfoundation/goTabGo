@@ -69,8 +69,10 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
-	tabApi.CreateSite("testSite")
-
+	_, err := tabApi.CreateSite("testSite1")
+	if err != nil {
+		log.Error(err.Error())
+	}
 }
 
 func init() {
