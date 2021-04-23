@@ -1,0 +1,11 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "model",
+    srcs = [
+        "tsreponse.go",
+        "tsrequest.go",
+    ],
+    importpath = "github.com/groundfoundation/gotabgo/model",
+    visibility = ["//visibility:public"],
+)

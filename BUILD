@@ -18,5 +18,8 @@ go_library(
     ],
     importpath = "github.com/groundfoundation/gotabgo",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_sirupsen_logrus//:logrus"],
+    deps = [
+        "//model",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
 )

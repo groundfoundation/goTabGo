@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/groundfoundation/gotabgo/model"
 )
 
 const content_type_header = "Content-Type"
@@ -24,12 +26,12 @@ var ErrDoesNotExist = errors.New("Does Not Exist")
 
 func (api *API) Signin(username, password string, contentUrl string, userIdToImpersonate string) error {
 	url := fmt.Sprintf("%s/api/%s/auth/signin", api.Server, api.Version)
-	credentials := Credentials{Name: username, Password: password}
+	credentials := model.Credentials{Name: username, Password: password}
 	if len(userIdToImpersonate) > 0 {
-		credentials.Impersonate = &User{ID: userIdToImpersonate}
+		credentials.Impersonate = &model.User{ID: userIdToImpersonate}
 	}
 	siteName := contentUrl
-	credentials.Site = &Site{ContentUrl: siteName}
+	credentials.Site = &model.SiteType{ContentUrl: siteName}
 	request := SigninRequest{Request: credentials}
 	signInXML, err := request.XML()
 	if err != nil {
@@ -56,7 +58,7 @@ func (api *API) Signout() error {
 }
 
 //http://onlinehelp.tableau.com/current/api/rest_api/en-us/help.htm#REST/rest_api_ref.htm#Server_Info%3FTocPath%3DAPI%2520Reference%7C__
-func (api *API) ServerInfo() (ServerInfo, error) {
+func (api *API) ServerInfo() (model.ServerInfo, error) {
 	// this call only works on apiVersion 2.4 and up
 	url := fmt.Sprintf("%s/api/%s/serverinfo", api.Server, "2.4")
 	headers := make(map[string]string)

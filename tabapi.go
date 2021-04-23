@@ -9,8 +9,18 @@ import (
 	"mime"
 	"net/http"
 
+	"github.com/groundfoundation/gotabgo/model"
 	log "github.com/sirupsen/logrus"
 )
+
+func init() {
+	log.WithFields(
+		log.Fields{
+			"package": "gotabgo",
+			"file":    "tabapi.go",
+		},
+	)
+}
 
 func NewTabApi(server, version string, useTLS bool, cType ContentType) (*TabApi, error) {
 	c := &httpClient{
@@ -30,32 +40,33 @@ func NewTabApi(server, version string, useTLS bool, cType ContentType) (*TabApi,
 // Signin authenticates a user and retrieves an auth token
 func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) (err error) {
 	url := fmt.Sprintf("%s/api/%s/auth/signin", t.getUrl(), t.ApiVersion)
-	credentials := Credentials{
+	credentials := model.Credentials{
 		Name:     username,
 		Password: password,
-		Site: &Site{
+		Site: &model.SiteType{
 			ContentUrl: contentUrl,
 		},
 	}
 
 	if impersonateUser != "" {
-		credentials.Impersonate = &User{
+		credentials.Impersonate = &model.User{
 			Name: impersonateUser,
 		}
 	}
-	signInRequest := SigninRequest{
-		Request: credentials,
-	}
+	var tsr model.TsRequest
+	tsr.Credentials = credentials
+
 	var payload []byte
 	switch t.ContentType {
 	case Xml:
-		payload, err = signInRequest.XML()
+		payload, err = xml.Marshal(tsr)
 	case Json:
-		payload, err = json.Marshal(signInRequest)
+		payload, err = json.Marshal(tsr)
 	}
 	if err != nil {
 		return err
 	}
+
 	// Post this to the endpoint
 	resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
 	if err != nil {
@@ -65,7 +76,7 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	log.WithField("method", "Signin").WithField("id", "body").Debug(string(body))
-	var tr TsResponse
+	var tr model.TsResponse
 	log.Debug("header", resp.Header.Get("Content-Type"))
 	contentType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 	switch contentType {
@@ -84,7 +95,7 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	return nil
 }
 
-func (t *TabApi) ServerInfo() (si *ServerInfo, err error) {
+func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 	//TODO: figure out how to use the apiversion instead of hard coding
 	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), "2.4")
 	r, e := t.c.Get(url)
@@ -100,20 +111,20 @@ func (t *TabApi) ServerInfo() (si *ServerInfo, err error) {
 	log.WithField("method", "ServerInfo").
 		Debug("response:\n", string(body))
 	// unmarshal this
-	var sir TsResponse
+	var tResponse model.TsResponse
 	switch t.ContentType {
 	case Xml:
-		err = xml.Unmarshal(body, &sir)
+		err = xml.Unmarshal(body, &tResponse)
 	case Json:
-		err = json.Unmarshal(body, &sir)
+		err = json.Unmarshal(body, &tResponse)
 	}
 	if err != nil {
 		return
 	}
 	log.WithField("method", "ServerInfo").
-		Debug("ServerInfoResponse:\n", sir)
+		Debug("ServerInfoResponse:\n", tResponse)
 
-	si = &sir.ServerInfo
+	si = &tResponse.ServerInfo
 
 	return
 
@@ -129,10 +140,10 @@ func (t *TabApi) getUrl() string {
 	return url
 }
 
-func (t *TabApi) CreateSite(siteName string) (*Site, error) {
+func (t *TabApi) CreateSite(siteName string) (*model.SiteType, error) {
 	url := fmt.Sprintf("%s/api/%s/sites", t.getUrl(), t.ApiVersion)
 	log.WithField("method", "CreateSite").Debug("url: ", string(url))
-	site := Site{
+	site := model.SiteType{
 		Name:       siteName,
 		ContentUrl: siteName,
 	}
@@ -150,15 +161,26 @@ func (t *TabApi) CreateSite(siteName string) (*Site, error) {
 		log.Error(e)
 		return nil, e
 	}
-	if r.StatusCode != http.StatusCreated {
-		return nil, &ApiError{r.StatusCode, r.Status}
-	}
-	log.WithField("method", "CreateSite").Debugf("Error: Code = %d Status = %s", r.StatusCode, r.Status)
+
 	defer r.Body.Close()
+	var tResponse model.TsResponse
+
 	createSiteResponse := CreateSiteResponse{}
 	body, e := ioutil.ReadAll(r.Body)
 	log.WithField("method", "CreateSite").Debug("response", string(body))
 
-	return nil, nil
+	mediaType, _, e := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	switch mediaType {
+	case "application/xml":
+		xml.Unmarshal(body, &tResponse)
+	case "application/json":
+		json.Unmarshal(body, &tResponse)
+	}
+	log.WithField("method", "CreateSite").Debug("unmarshal", tResponse)
+	if r.StatusCode != http.StatusCreated {
+		return nil, &ApiError{r.StatusCode, r.Status}
+	}
+	log.WithField("method", "CreateSite").Debugf("Error: Code = %d Status = %s", r.StatusCode, r.Status)
+
 	return &createSiteResponse.Site, err
 }

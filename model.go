@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strings"
+
+	"github.com/groundfoundation/gotabgo/model"
 )
 
 const DEFAULT_API_VERSION = "2.5"
@@ -26,7 +28,7 @@ func NewAPI(server string, version string, boundary string, siteName string) API
 }
 
 type SigninRequest struct {
-	Request Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
+	Request model.Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
 }
 
 func (req SigninRequest) XML() ([]byte, error) {
@@ -38,60 +40,15 @@ func (req SigninRequest) XML() ([]byte, error) {
 }
 
 type AuthResponse struct {
-	Credentials *Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
+	Credentials *model.Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
 }
 
 type ServerInfoResponse struct {
-	ServerInfo ServerInfo `json:"serverInfo,omitempty" xml:"serverInfo,omitempty"`
-}
-
-type ProductVersion struct {
-	XMLName xml.Name `json:"-" xml:"productVersion"`
-	Value   string   `json:"value" xml:",chardata"`
-	Build   string   `json:"build" xml:"build,attr"`
-}
-
-type ServerInfo struct {
-	XMLName        xml.Name       `json:"-" xml:"serverInfo"`
-	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion"`
-	RestApiVersion string         `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
-}
-
-type Credentials struct {
-	XMLName     xml.Name `json:"-" xml:"credentials"`
-	Name        string   `json:"name,omitempty" xml:"name,attr,omitempty"`
-	Password    string   `json:"password,omitempty" xml:"password,attr,omitempty"`
-	Token       string   `json:"token,omitempty" xml:"token,attr,omitempty"`
-	Site        *Site    `json:"site,omitempty" xml:"site,omitempty"`
-	Impersonate *User    `json:"user,omitempty" xml:"user,omitempty"`
-}
-
-type User struct {
-	ID       string `json:"id,omitempty" xml:"id,attr,omitempty"`
-	Name     string `json:"name,omitempty" xml:"name,attr,omitempty"`
-	SiteRole string `json:"siteRole,omitempty" xml:"siteRole,attr,omitempty"`
-	FullName string `json:"fullName,omitempty" xml:"fullName,attr,omitempty"`
-}
-
-type Site struct {
-	ID           string     `json:"id,omitempty" xml:"id,attr,omitempty"`
-	Name         string     `json:"name,omitempty" xml:"name,attr,omitempty"`
-	ContentUrl   string     `json:"contentUrl,omitempty" xml:"contentUrl,attr,omitempty"`
-	AdminMode    string     `json:"adminMode,omitempty" xml:"adminMode,attr,omitempty"`
-	UserQuota    string     `json:"userQuota,omitempty" xml:"userQuota,attr,omitempty"`
-	StorageQuota int        `json:"storageQuota,omitempty" xml:"storageQuota,attr,omitempty"`
-	State        string     `json:"state,omitempty" xml:"state,attr,omitempty"`
-	StatusReason string     `json:"statusReason,omitempty" xml:"statusReason,attr,omitempty"`
-	Usage        *SiteUsage `json:"usage,omitempty" xml:"usage,omitempty"`
-}
-
-type SiteUsage struct {
-	NumberOfUsers int `json:"number-of-users" xml:"number-of-users,attr"`
-	Storage       int `json:"storage" xml:"storage,attr"`
+	ServerInfo model.ServerInfo `json:"serverInfo,omitempty" xml:"serverInfo,omitempty"`
 }
 
 type CreateSiteRequest struct {
-	Request Site `json:"site,omitempty" xml:"site,omitempty"`
+	Request model.SiteType `json:"site,omitempty" xml:"site,omitempty"`
 }
 
 func (req CreateSiteRequest) XML() ([]byte, error) {
@@ -103,17 +60,13 @@ func (req CreateSiteRequest) XML() ([]byte, error) {
 }
 
 type CreateSiteResponse struct {
-	Site Site `json:"site,omitempty" xml:"site,omitempty"`
+	Site model.SiteType `json:"site,omitempty" xml:"site,omitempty"`
 }
 
 type ConnectionCredentials struct {
 	Name     string `json:"name,omitempty" xml:"name,attr,omitempty"`
 	Password string `json:"password,omitempty" xml:"password,attr,omitempty"`
 	Embed    bool   `json:"embed" xml:"embed,attr"`
-}
-
-func (s Site) XML() ([]byte, error) {
-	return xml.MarshalIndent(s, "", "   ")
 }
 
 type GoDie struct {
