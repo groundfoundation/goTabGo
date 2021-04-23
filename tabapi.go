@@ -57,12 +57,7 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	tsr.Credentials = credentials
 
 	var payload []byte
-	switch t.ContentType {
-	case Xml:
-		payload, err = xml.Marshal(tsr)
-	case Json:
-		payload, err = json.Marshal(tsr)
-	}
+	payload, err = getPayload(tsr, t.ContentType)
 	if err != nil {
 		return err
 	}
@@ -140,22 +135,31 @@ func (t *TabApi) getUrl() string {
 	return url
 }
 
-func (t *TabApi) CreateSite(siteName string) (*model.SiteType, error) {
+func getPayload(thingToEncode interface{}, contentType ContentType) (payload []byte, err error) {
+	switch contentType {
+	case Xml:
+		payload, err = xml.Marshal(thingToEncode)
+	case Json:
+		payload, err = json.Marshal(thingToEncode)
+	}
+	return
+}
+
+func (t *TabApi) CreateSite(siteName string) (st *model.SiteType, err error) {
 	url := fmt.Sprintf("%s/api/%s/sites", t.getUrl(), t.ApiVersion)
 	log.WithField("method", "CreateSite").Debug("url: ", string(url))
 	site := model.SiteType{
 		Name:       siteName,
 		ContentUrl: siteName,
 	}
-	createSiteRequest := CreateSiteRequest{Request: site}
-	xmlRep, err := createSiteRequest.XML()
-	log.WithField("method", "CreateSite").Debug("xml", xmlRep)
-	if err != nil {
-		return nil, err
-	}
-	log.WithField("method", "CreateSite").
-		WithField("id", "Token").Debug(t.c.authToken)
-	r, e := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(xmlRep))
+	var tsRequest model.TsRequest
+	tsRequest.Site = site
+
+	var payload []byte
+	payload, err = getPayload(tsRequest, t.c.acceptType)
+	log.WithField("method", "CreateSite").Debug("payload", string(payload))
+	log.WithField("method", "CreateSite").WithField("id", "Token").Debug(t.c.authToken)
+	r, e := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
 
 	if e != nil {
 		log.Error(e)
