@@ -43,7 +43,7 @@ func main() {
 
 	apiVer = os.Getenv("TABLEAU_API_VERSION")
 	if apiVer == "" {
-		apiVer = "2.9"
+		apiVer = "3.9"
 	}
 	log.Debug("API Version:", apiVer)
 
@@ -69,7 +69,7 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
-	_, err := tabApi.CreateSite("testSite1")
+	_, err := tabApi.CreateSite("Test Site 3", "ts3")
 	if err != nil {
 		log.Error(err.Error())
 	}
