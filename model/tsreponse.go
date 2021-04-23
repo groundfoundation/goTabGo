@@ -8,6 +8,7 @@ type TsResponse struct {
 	ServerInfo  ServerInfo  `json:"serverInfo" xml:"serverInfo"`
 	Credentials Credentials `json:"credentials" xml:"credentials"`
 	Error       ErrorType   `json:"error" xml:"error"`
+	Site        SiteType    `json:"site" xml:"site"`
 }
 
 // ServerInfo contains information about product version and api version for the server
