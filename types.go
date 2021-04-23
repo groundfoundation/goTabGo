@@ -1,6 +1,11 @@
 package gotabgo
 
-import "errors"
+import (
+	"encoding/xml"
+	"errors"
+
+	"github.com/groundfoundation/gotabgo/model"
+)
 
 type ContentType int
 
@@ -31,4 +36,11 @@ type TabApi struct {
 	ApiVersion  string
 	ContentType ContentType
 	c           *httpClient
+}
+
+type TsResponse struct {
+	XMLName xml.Name `json:"-" xml:"tsResponse"`
+
+	ServerInfo  model.ServerInfo  `json:"serverInfo" xml:"serverInfo"`
+	Credentials model.Credentials `json:"credentials" xml:"credentials"`
 }
