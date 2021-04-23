@@ -8,11 +8,9 @@ gazelle(name = "gazelle")
 go_library(
     name = "gotabgo",
     srcs = [
-        "client.go",
         "error.go",
         "http.go",
         "httpclient.go",
-        "model.go",
         "tabapi.go",
         "types.go",
     ],
