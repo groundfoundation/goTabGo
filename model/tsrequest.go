@@ -8,3 +8,9 @@ type TsRequest struct {
 	Credentials Credentials `json:"credentials,omitempty" xml:"credentials,omitempty"`
 	Site        SiteType    `json:"site,omitempty" xml:"site,omitempty"`
 }
+
+//
+type TrustedTicket struct {
+	Username    string
+	target_site string
+}

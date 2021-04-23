@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/groundfoundation/gotabgo"
+	"github.com/groundfoundation/gotabgo/model"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/term"
 )
@@ -61,18 +62,24 @@ func main() {
 	}
 	siFmt, _ := json.MarshalIndent(si, "", "\t")
 	siXml, _ := xml.MarshalIndent(si, "", "\t")
-	fmt.Printf("Server Info:\n%s", siFmt)
-	fmt.Printf("Server Info:\n%s", siXml)
+	fmt.Printf("\nJSON Server Info:\n%s", siFmt)
+	fmt.Printf("\nXMLServer Info:\n%s", siXml)
 
 	// Let's login!
 	e = tabApi.Signin(user, password, "", "")
 	if e != nil {
 		log.Fatal(e)
 	}
-	_, err := tabApi.CreateSite("Test Site 3", "ts3")
+	fmt.Print("\nAbout to test Create Site Fuction.\nEnter Site Name: ")
+	siteName, _ := reader.ReadString('\n')
+	fmt.Print("Enter Site URL ID: ")
+	siteURL, _ := reader.ReadString('\n')
+	site, err := tabApi.CreateSite(model.SiteType{Name: siteName, ContentUrl: siteURL})
 	if err != nil {
 		log.Error(err.Error())
 	}
+	j, _ := json.Marshal(site)
+	fmt.Print(string(j))
 }
 
 func init() {
