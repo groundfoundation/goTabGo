@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var user, server, password string
+	var user, server, password, apiVer string
 	reader := bufio.NewReader(os.Stdin)
 
 	server = os.Getenv("TAB_SERVER")
@@ -39,15 +39,22 @@ func main() {
 	}
 	log.Debug("Password value obtained")
 
+	apiVer = os.Getenv("TABLEAU_API_VERSION")
+	if apiVer == "" {
+		apiVer = "2.9"
+	}
+	log.Debug("API Version:", apiVer)
+
 	fmt.Printf("\nServer is: %s", server)
 
-	tabApi, e := gotabgo.NewTabApi(server, "2.8", true, gotabgo.Json)
+	tabApi, e := gotabgo.NewTabApi(server, apiVer, true, gotabgo.Json)
 	if e != nil {
 		log.Fatal(e)
 	}
 
 	log.Debug("tabApi", tabApi)
 	tabApi.ServerInfo()
+	tabApi.CreateSite("testSite")
 
 }
 
