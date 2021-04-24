@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -70,18 +71,18 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	}
 	log.WithField("method", "Signin").Debug(resp)
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	log.WithField("method", "Signin").WithField("id", "body").Debug(string(body))
-	var tr model.TsResponse
-	log.Debug("header", resp.Header.Get("Content-Type"))
-	contentType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-	switch contentType {
-	case "application/xml":
-		err = xml.Unmarshal(body, &tr)
-	case "application/json":
-		err = json.Unmarshal(body, &tr)
+	ctStr, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+	if err != nil {
+		return err
 	}
 
+	contentType, err := ContentTypeString(ctStr)
+	if err != nil {
+		return err
+	}
+
+	var tr model.TsResponse
+	err = putResponse(resp.Body, &tr, contentType)
 	log.WithField("method", "Signin").
 		WithField("id", "unmarshal tr").Debug(tr)
 	t.c.authToken = tr.Credentials.Token
@@ -161,6 +162,16 @@ func getPayload(thingToEncode interface{}, contentType ContentType) (payload []b
 		payload, err = xml.Marshal(thingToEncode)
 	case Json:
 		payload, err = json.Marshal(thingToEncode)
+	}
+	return
+}
+
+func putResponse(r io.ReadCloser, dest interface{}, contentType ContentType) (err error) {
+	switch contentType {
+	case Xml:
+		err = xml.NewDecoder(r).Decode(dest)
+	case Json:
+		err = json.NewDecoder(r).Decode(dest)
 	}
 	return
 }
