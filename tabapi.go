@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"strings"
@@ -119,22 +118,17 @@ func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 		return nil, e
 	}
 
-	log.WithField("method", "ServerInfo").
-		Debug("response:\n", r)
+	log.WithField("method", "ServerInfo").Debug("response:\n", r)
 	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
-	log.WithField("method", "ServerInfo").
-		Debug("response:\n", string(body))
-	// unmarshal this
-	var tResponse model.TsResponse
-	switch t.ContentType {
-	case Xml:
-		err = xml.Unmarshal(body, &tResponse)
-	case Json:
-		err = json.Unmarshal(body, &tResponse)
-	}
+	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil {
-		return
+		return nil, err
+	}
+	contentType, err := ContentTypeString(ctStr)
+	var tResponse model.TsResponse
+	err = putResponse(r.Body, &tResponse, contentType)
+	if err != nil {
+		return nil, err
 	}
 	log.WithField("method", "ServerInfo").
 		Debug("ServerInfoResponse:\n", tResponse)
@@ -196,15 +190,17 @@ func (t *TabApi) CreateSite(site model.SiteType) (st *model.SiteType, err error)
 	defer r.Body.Close()
 	var tResponse model.TsResponse
 
-	body, e := ioutil.ReadAll(r.Body)
-	log.WithField("method", "CreateSite").Debug("response", string(body))
-
 	mediaType, _, e := mime.ParseMediaType(r.Header.Get("Content-Type"))
-	switch mediaType {
-	case "application/xml":
-		xml.Unmarshal(body, &tResponse)
-	case "application/json":
-		json.Unmarshal(body, &tResponse)
+	if e != nil {
+		return
+	}
+	contentType, e := ContentTypeString(mediaType)
+	if e != nil {
+		return
+	}
+	e = putResponse(r.Body, &tResponse, contentType)
+	if e != nil {
+		return
 	}
 	log.WithField("method", "CreateSite").Debug("unmarshal", tResponse)
 	if r.StatusCode != http.StatusCreated {
