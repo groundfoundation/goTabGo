@@ -12,5 +12,6 @@ type TsRequest struct {
 //
 type TrustedTicket struct {
 	Username    string
-	target_site string
+	Target_site string
+	Ticket      string
 }

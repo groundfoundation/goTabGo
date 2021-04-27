@@ -70,6 +70,7 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
+	// Let's Create a site!
 	fmt.Print("\nAbout to test Create Site Fuction.\nEnter Site Name: ")
 	siteName, _ := reader.ReadString('\n')
 	fmt.Print("Enter Site URL ID: ")
@@ -80,6 +81,14 @@ func main() {
 	}
 	j, _ := json.Marshal(site)
 	fmt.Print(string(j))
+
+	// Let's get a trusted ticket!
+	fmt.Print("\nAbout to test trusted ticket.\nEnter User Name for ticket using default site: ")
+	userName, _ := reader.ReadString('\n')
+	_, err = tabApi.NewTrustedTicket(model.TrustedTicket{Username: userName, Target_site: "", Ticket: ""})
+	if err != nil {
+		log.Error(err.Error())
+	}
 }
 
 func init() {
