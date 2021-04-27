@@ -90,10 +90,11 @@ func main() {
 	fmt.Print("\nAbout to test trusted ticket.\nEnter Site: ")
 	tSite, _ := reader.ReadString('\n')
 	tSite = strings.TrimSuffix(tSite, "\n")
-	_, err = tabApi.NewTrustedTicket(userName, tSite)
+	ticket, err := tabApi.NewTrustedTicket(userName, tSite)
 	if err != nil {
 		log.Error(err.Error())
 	}
+	fmt.Printf("\nTicket: %s\n", ticket)
 }
 
 func init() {

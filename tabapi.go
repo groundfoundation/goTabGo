@@ -93,7 +93,6 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 
 func (t *TabApi) NewTrustedTicket(user string, site string) (st string, err error) {
 	url := fmt.Sprintf("%s/trusted", t.getUrl())
-	//payload := strings.NewReader("username=bjoh121&target_site=RQNS")
 	userString := fmt.Sprintf("username=%s&target_site=%s", user, site)
 	log.WithField("method", "NewTrustedTicket").
 		Debug("userString: ", userString)
