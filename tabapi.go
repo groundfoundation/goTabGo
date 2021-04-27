@@ -90,6 +90,19 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	return nil
 }
 
+func (t *TabApi) NewTrustedTicket(tt model.TrustedTicket) (st string, err error) {
+	url := fmt.Sprintf("%s/trusted", t.getUrl())
+	var payload []byte
+	payload, err = getPayload(tt, t.c.acceptType)
+	resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	st = string(body)
+	log.WithField("method", "NewTrustedTicket").
+		Debug("response: ", st)
+	return st, nil
+}
+
 func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 	//TODO: figure out how to use the apiversion instead of hard coding
 	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), "2.4")

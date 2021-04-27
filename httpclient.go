@@ -24,7 +24,7 @@ func (c *httpClient) Get(url string) (resp *http.Response, err error) {
 }
 
 func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.Response, err error) {
-	req, err := http.NewRequest("POST", url, body)
+	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		return nil, err
 	}
