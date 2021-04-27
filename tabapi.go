@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/groundfoundation/gotabgo/model"
 	log "github.com/sirupsen/logrus"
@@ -90,11 +91,17 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	return nil
 }
 
-func (t *TabApi) NewTrustedTicket(tt model.TrustedTicket) (st string, err error) {
+func (t *TabApi) NewTrustedTicket(user string, site string) (st string, err error) {
 	url := fmt.Sprintf("%s/trusted", t.getUrl())
-	var payload []byte
-	payload, err = getPayload(tt, t.c.acceptType)
-	resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	//payload := strings.NewReader("username=bjoh121&target_site=RQNS")
+	userString := fmt.Sprintf("username=%s&target_site=%s", user, site)
+	log.WithField("method", "NewTrustedTicket").
+		Debug("userString: ", userString)
+	payload := strings.NewReader(userString)
+	r, err := http.NewRequest("POST", url, payload)
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	resp, _ := http.DefaultClient.Do(r)
+	//resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	st = string(body)

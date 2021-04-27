@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/groundfoundation/gotabgo"
 	"github.com/groundfoundation/gotabgo/model"
@@ -83,9 +84,13 @@ func main() {
 	fmt.Print(string(j))
 
 	// Let's get a trusted ticket!
-	fmt.Print("\nAbout to test trusted ticket.\nEnter User Name for ticket using default site: ")
+	fmt.Print("\nAbout to test trusted ticket.\nEnter User Name for ticket: ")
 	userName, _ := reader.ReadString('\n')
-	_, err = tabApi.NewTrustedTicket(model.TrustedTicket{Username: userName, Target_site: "", Ticket: ""})
+	userName = strings.TrimSuffix(userName, "\n")
+	fmt.Print("\nAbout to test trusted ticket.\nEnter Site: ")
+	tSite, _ := reader.ReadString('\n')
+	tSite = strings.TrimSuffix(tSite, "\n")
+	_, err = tabApi.NewTrustedTicket(userName, tSite)
 	if err != nil {
 		log.Error(err.Error())
 	}
