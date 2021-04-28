@@ -10,7 +10,3 @@ type TsRequest struct {
 }
 
 //
-type TrustedTicket struct {
-	Username    string `json:"username,omitempty" xml:"username,omitempty"`
-	Target_site string `json:"target_site,omitempty" xml:"target_site,omitempty"`
-}

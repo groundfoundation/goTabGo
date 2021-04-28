@@ -7,14 +7,15 @@ type ContentType int
 const (
 	Json ContentType = iota
 	Xml
+	Form
 )
 
 func (r ContentType) String() string {
-	return [...]string{"application/json", "application/xml"}[r]
+	return [...]string{"application/json", "application/xml", "application/x-www-form-urlencoded"}[r]
 }
 
 func ContentTypeString(s string) (c ContentType, e error) {
-	var cTypeMap = map[string]ContentType{"application/json": Json, "application/xml": Xml}
+	var cTypeMap = map[string]ContentType{"application/json": Json, "application/xml": Xml, "application/x-www-form-urlencoded": Form}
 	var ok bool
 
 	if c, ok = cTypeMap[s]; ok {

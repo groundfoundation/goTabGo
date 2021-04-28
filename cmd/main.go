@@ -90,11 +90,11 @@ func main() {
 	fmt.Print("\nAbout to test trusted ticket.\nEnter Site: ")
 	tSite, _ := reader.ReadString('\n')
 	tSite = strings.TrimSuffix(tSite, "\n")
-	ticket, err := tabApi.NewTrustedTicket(userName, tSite)
+	ticket, err := tabApi.NewTrustedTicket(model.TrustedTicketRequest{Username: userName, Targetsite: tSite})
 	if err != nil {
 		log.Error(err.Error())
 	}
-	fmt.Printf("\nTicket: %s\n", ticket)
+	fmt.Printf("\nTicket: %s\n", ticket.Value)
 }
 
 func init() {

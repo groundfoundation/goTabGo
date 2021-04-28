@@ -6,8 +6,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/groundfoundation/gotabgo/model"
@@ -91,22 +93,21 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	return nil
 }
 
-func (t *TabApi) NewTrustedTicket(user string, site string) (st string, err error) {
-	url := fmt.Sprintf("%s/trusted", t.getUrl())
-	userString := fmt.Sprintf("username=%s&target_site=%s", user, site)
-	log.WithField("method", "NewTrustedTicket").
-		Debug("userString: ", userString)
-	payload := strings.NewReader(userString)
-	r, err := http.NewRequest("POST", url, payload)
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	resp, _ := http.DefaultClient.Do(r)
-	//resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+func (t *TabApi) NewTrustedTicket(ttr model.TrustedTicketRequest) (tt model.TrustedTicket, err error) {
+	purl := fmt.Sprintf("%s/trusted", t.getUrl())
+	data := url.Values{}
+	data.Set("username", ttr.Username)
+	data.Set("target_site", ttr.Targetsite)
+	payload := strings.NewReader(data.Encode())
+	var ctype ContentType = Form
+	resp, err := t.c.Post(purl, ctype.String(), payload)
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	st = string(body)
+	tt.Value = string(body)
 	log.WithField("method", "NewTrustedTicket").
-		Debug("response: ", st)
-	return st, nil
+		Debug("response: ", tt.Value)
+	return
 }
 
 func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
