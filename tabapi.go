@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"net/url"
@@ -101,10 +101,14 @@ func (t *TabApi) NewTrustedTicket(ttr model.TrustedTicketRequest) (tt model.Trus
 	payload := strings.NewReader(data.Encode())
 	var ctype ContentType = Form
 	resp, err := t.c.Post(purl, ctype.String(), payload)
-
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	tt.Value = string(body)
+	if resp.StatusCode != http.StatusOK {
+		err = errors.New("Failed: " + resp.Status)
+		return
+	}
+	buf := new(bytes.Buffer)
+	io.Copy(buf, resp.Body)
+	tt.Value = buf.String()
 	log.WithField("method", "NewTrustedTicket").
 		Debug("response: ", tt.Value)
 	return
