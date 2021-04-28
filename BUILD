@@ -9,7 +9,6 @@ go_library(
     name = "gotabgo",
     srcs = [
         "error.go",
-        "http.go",
         "httpclient.go",
         "tabapi.go",
         "types.go",
