@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "gotabgo_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/groundfoundation/gotabgo/gotabgo",
+    visibility = ["//visibility:private"],
+    deps = ["//gotabgo/cmd"],
+)
+
+go_binary(
+    name = "gotabgo",
+    embed = [":gotabgo_lib"],
+    visibility = ["//visibility:public"],
+)
