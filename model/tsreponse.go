@@ -4,7 +4,7 @@ import "encoding/xml"
 
 // TsResponse is the wrapper that Tableau Server wraps each response with
 type TsResponse struct {
-	XMLName     xml.Name    `json:"-"            xml:"tsResponse"`
+	XMLName     xml.Name    `json:"-"            xml:"http://tableau.com/api tsResponse"`
 	ServerInfo  ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
 	Credentials Credentials `json:"credentials"  xml:"credentials"`
 	Error       ErrorType   `json:"error"        xml:"error"`
