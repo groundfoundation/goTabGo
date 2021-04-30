@@ -135,8 +135,11 @@ func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 	if err != nil {
 		return nil, err
 	}
-	log.WithField("method", "ServerInfo").
-		Debug("ServerInfoResponse:\n", tResponse)
+	log.WithField("method", "ServerInfo").Debug("ServerInfoResponse:\n", tResponse)
+	if x, err := xml.Marshal(tResponse); err != nil {
+		log.WithField("method", "ServerInfo").
+			Debug("ServerInfoResponse - XML:\n", x)
+	}
 
 	si = &tResponse.ServerInfo
 
