@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +38,7 @@ var serverinfoCmd = &cobra.Command{
 		if e != nil {
 			return e
 		}
-		fmt.Println(si)
+		log.Debugf("serverinformatio: %v", si)
 		return nil
 	},
 }
