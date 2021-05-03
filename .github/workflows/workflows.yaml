@@ -22,8 +22,8 @@ jobs:
       - name: Build
         run: |
           "${GITHUB_WORKSPACE}/bin/bazel" build //...
-      - name: Test
-        run: |
-          "${GITHUB_WORKSPACE}/bin/bazel" test //...
-          "${GITHUB_WORKSPACE}/bin/bazel" coverage ... --test_arg=covermode=count
+          #- name: Test
+          #run: |
+          #"${GITHUB_WORKSPACE}/bin/bazel" test //...
+          #"${GITHUB_WORKSPACE}/bin/bazel" coverage ... --test_arg=covermode=count
 
