@@ -16,6 +16,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	DefaultApiVer = "2.4"
+)
+
 func init() {
 	log.WithFields(
 		log.Fields{
@@ -87,6 +91,7 @@ func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) 
 	log.WithField("method", "Signin").
 		WithField("id", "unmarshal tr").Debug(tr)
 	t.c.authToken = tr.Credentials.Token
+	t.SiteID = tr.Credentials.Site.ID
 	log.WithField("method", "Signin").
 		WithField("id", "Token").Debug(t.c.authToken)
 
@@ -116,7 +121,7 @@ func (t *TabApi) NewTrustedTicket(ttr model.TrustedTicketRequest) (tt model.Trus
 
 func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 	//TODO: figure out how to use the apiversion instead of hard coding
-	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), "2.4")
+	url := fmt.Sprintf("%s/api/%s/serverinfo", t.getUrl(), DefaultApiVer)
 	r, e := t.c.Get(url)
 	if e != nil {
 		log.Error(e)
@@ -142,6 +147,69 @@ func (t *TabApi) ServerInfo() (si *model.ServerInfo, err error) {
 	}
 
 	si = &tResponse.ServerInfo
+
+	return
+}
+
+func (t *TabApi) QueryUserOnSite(user string) (u *model.User, err error) {
+	url := fmt.Sprintf("%s/api/%s/sites/%s/users?filter=name:eq:%s", t.getUrl(), t.ApiVersion, t.SiteID, user)
+	//url := fmt.Sprintf("%s/api/%s/sites/%s/users", t.getUrl(), t.ApiVersion, t.SiteID)
+	log.WithField("method", "QueryUserOnSite").Debug("url:", url)
+	r, e := t.c.Get(url)
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+	log.WithField("method", "QueryUserOnSite").Debug("response:\n", r)
+	defer r.Body.Close()
+	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil {
+		return nil, err
+	}
+	contentType, err := ContentTypeString(ctStr)
+	log.WithField("method", "QueryUserOnSite").Debugf("Content-type: %s", contentType)
+	var tResponse model.TsResponse
+	err = putResponse(r.Body, &tResponse, contentType)
+	if err != nil {
+		return nil, err
+	}
+	log.WithField("method", "QueryUserOnSite").Debug("ServerInfoResponse:\n", tResponse)
+	if x, err := xml.Marshal(tResponse); err != nil {
+		log.WithField("method", "QueryUserOnSite").
+			Debug("ServerInfoResponse - XML:\n", x)
+	}
+	u = &tResponse.Users.User[0]
+
+	return
+}
+
+func (t *TabApi) ListReportsForUser(u *model.User) (w *model.Workbooks, err error) {
+	log.WithField("method", "ListReportsForUser").Debug("Checking reports for :", u.Name)
+	url := fmt.Sprintf("%s/api/%s/sites/%s/users/%s/workbooks", t.getUrl(), t.ApiVersion, t.SiteID, u.ID)
+	r, e := t.c.Get(url)
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+	log.WithField("method", "ListReportsForUser").Debug("response:\n", r)
+	defer r.Body.Close()
+	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil {
+		return nil, err
+	}
+	contentType, err := ContentTypeString(ctStr)
+	var tResponse model.TsResponse
+	err = putResponse(r.Body, &tResponse, contentType)
+	if err != nil {
+		return nil, err
+	}
+	log.WithField("method", "ListReportsForUser").Debug("ServerInfoResponse:\n", tResponse)
+	if x, err := xml.Marshal(tResponse); err != nil {
+		log.WithField("method", "ListReportsForUser").
+			Debug("ServerInfoResponse - XML:\n", x)
+	}
+
+	w = &tResponse.Workbooks[0]
 
 	return
 }

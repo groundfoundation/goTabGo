@@ -4,8 +4,12 @@ import "encoding/xml"
 
 // TsResponse is the wrapper that Tableau Server wraps each response with
 type TsResponse struct {
-	XMLName     xml.Name    `json:"-"            xml:"http://tableau.com/api tsResponse"`
-	ServerInfo  ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
+	XMLName    xml.Name    `json:"-"            xml:"http://tableau.com/api tsResponse"`
+	ServerInfo ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
+	Workbooks  []Workbooks `json:"workbooks"   xml:"workbooks"`
+	Users      struct {
+		User []User `json:"user"   xml:"user"`
+	} `json:"users"   xml:"users"`
 	Credentials Credentials `json:"credentials"  xml:"credentials"`
 	Error       ErrorType   `json:"error"        xml:"error"`
 	Site        SiteType    `json:"site"         xml:"site"`
@@ -57,6 +61,36 @@ type User struct {
 	Name     string   `json:"name,omitempty"      xml:"name,attr,omitempty"`
 	SiteRole string   `json:"siteRole,omitempty"  xml:"siteRole,attr,omitempty"`
 	FullName string   `json:"fullName,omitempty"  xml:"fullName,attr,omitempty"`
+}
+
+type Workbook struct {
+	XMLName     xml.Name `json:"-"                   xml:"workbook"`
+	ID          string   `json:"id,omitempty"        xml:"id,attr,omitempty"`
+	Name        string   `json:"name,omitempty"      xml:"name,attr,omitempty"`
+	Description string   `json:"description,omitempty"  xml:"description,attr,omitempty"`
+	WebPageUrl  string   `json:"webpageurl,omitempty"  xml:"webpageurl,attr,omitempty"`
+	ContentUrl  string   `json:"contentUrl,omitempty"  xml:"contentUrl,attr,omitempty"`
+}
+
+type Workbooks struct {
+	XMLName       xml.Name       `json:"-"                   xml:"workbooks"`
+	Workbook      *Workbook      `json:"workbook,omitempty"      xml:"workbook,omitempty"`
+	ShowTabs      string         `json:"showTabs,omitempty"        xml:"showTabs,attr,omitempty"`
+	Size          string         `json:"size,omitempty"        xml:"size,attr,omitempty"`
+	CreatedAt     string         `json:"createdAt,omitempty"        xml:"createdAt,attr,omitempty"`
+	UpdatedAt     string         `json:"updatedAt,omitempty"        xml:"updatedAt,attr,omitempty"`
+	DefaultViewId *DefaultViewId `json:"defaultViewId,omitempty"        xml:"defaultViewId,attr,omitempty"`
+}
+
+type DefaultViewId struct {
+	XMLName xml.Name `json:"-"                   xml:"defaultViewId"`
+	Project struct {
+		ID   string `json:"id,omitempty"        xml:"id,attr,omitempty"`
+		Name string `json:"name,omitempty"      xml:"name,attr,omitempty"`
+	}
+	Owner struct {
+		ID string `json:"id,omitempty"        xml:"id,attr,omitempty"`
+	}
 }
 
 type ErrorType struct {

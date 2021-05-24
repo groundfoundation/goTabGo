@@ -34,6 +34,7 @@ type TabApi struct {
 	UseTLS      bool
 	Server      string
 	ApiVersion  string
+	SiteID      string
 	ContentType ContentType
 	c           *httpClient
 }

@@ -95,6 +95,20 @@ func main() {
 		log.Error(err.Error())
 	}
 	fmt.Printf("\nTicket: %s\n", ticket.Value)
+
+	// Let's list reports for a user
+	fmt.Printf("\nChecking for user: %s\n", userName)
+	userStruct, err := tabApi.QueryUserOnSite(userName)
+	if err != nil {
+		log.Error(err.Error())
+	}
+	fmt.Printf("\nListing Reports for ID: %s\n", userStruct.ID)
+	workbooks, err := tabApi.ListReportsForUser(userStruct)
+	if err != nil {
+		log.Error(err.Error())
+	}
+	//for _, v := range workbooks {
+	fmt.Printf("\nWorkbook: %s\n", workbooks.Workbook.Name)
 }
 
 func init() {
