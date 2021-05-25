@@ -183,7 +183,7 @@ func (t *TabApi) QueryUserOnSite(user string) (u *model.User, err error) {
 	return
 }
 
-func (t *TabApi) ListReportsForUser(u *model.User) (w *model.Workbooks, err error) {
+func (t *TabApi) ListReportsForUser(u *model.User) (w []model.Workbook, err error) {
 	log.WithField("method", "ListReportsForUser").Debug("Checking reports for :", u.Name)
 	url := fmt.Sprintf("%s/api/%s/sites/%s/users/%s/workbooks", t.getUrl(), t.ApiVersion, t.SiteID, u.ID)
 	r, e := t.c.Get(url)
@@ -209,7 +209,7 @@ func (t *TabApi) ListReportsForUser(u *model.User) (w *model.Workbooks, err erro
 			Debug("ServerInfoResponse - XML:\n", x)
 	}
 
-	w = &tResponse.Workbooks[0]
+	w = tResponse.Workbooks.Workbook
 
 	return
 }

@@ -4,9 +4,9 @@ import "encoding/xml"
 
 // TsResponse is the wrapper that Tableau Server wraps each response with
 type TsResponse struct {
-	XMLName    xml.Name    `json:"-"            xml:"http://tableau.com/api tsResponse"`
-	ServerInfo ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
-	Workbooks  []Workbooks `json:"workbooks"   xml:"workbooks"`
+	XMLName    xml.Name   `json:"-"            xml:"http://tableau.com/api tsResponse"`
+	ServerInfo ServerInfo `json:"serverInfo"   xml:"serverInfo"`
+	Workbooks  Workbooks  `json:"workbooks"   xml:"workbooks"`
 	Users      struct {
 		User []User `json:"user"   xml:"user"`
 	} `json:"users"   xml:"users"`
@@ -74,7 +74,7 @@ type Workbook struct {
 
 type Workbooks struct {
 	XMLName       xml.Name       `json:"-"                   xml:"workbooks"`
-	Workbook      *Workbook      `json:"workbook,omitempty"      xml:"workbook,omitempty"`
+	Workbook      []Workbook     `json:"workbook,omitempty"      xml:"workbook,omitempty"`
 	ShowTabs      string         `json:"showTabs,omitempty"        xml:"showTabs,attr,omitempty"`
 	Size          string         `json:"size,omitempty"        xml:"size,attr,omitempty"`
 	CreatedAt     string         `json:"createdAt,omitempty"        xml:"createdAt,attr,omitempty"`

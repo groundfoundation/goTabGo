@@ -107,8 +107,9 @@ func main() {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	//for _, v := range workbooks {
-	fmt.Printf("\nWorkbook: %s\n", workbooks.Workbook.Name)
+	for _, workbook := range workbooks {
+		fmt.Printf("\nWorkbook: %v\n", workbook.Name)
+	}
 }
 
 func init() {
