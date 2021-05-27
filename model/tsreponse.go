@@ -4,24 +4,38 @@ import "encoding/xml"
 
 // TsResponse is the wrapper that Tableau Server wraps each response with
 type TsResponse struct {
-	XMLName    xml.Name   `json:"-"            xml:"http://tableau.com/api tsResponse"`
-	ServerInfo ServerInfo `json:"serverInfo"   xml:"serverInfo"`
-	Workbooks  Workbooks  `json:"workbooks"   xml:"workbooks"`
-	Users      struct {
-		User []User `json:"user"   xml:"user"`
-	} `json:"users"   xml:"users"`
+	XMLName     xml.Name    `json:"-"            xml:"http://tableau.com/api tsResponse"`
+	Pagination  Pagination  `json:"pagination"   xml:"pagination"`
+	ServerInfo  ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
+	Workbooks   Workbooks   `json:"workbooks"    xml:"workbooks"`
+	Users       Users       `json:"users"        xml:"users"`
 	Credentials Credentials `json:"credentials"  xml:"credentials"`
 	Error       ErrorType   `json:"error"        xml:"error"`
 	Site        SiteType    `json:"site"         xml:"site"`
+	Sites       *Sites      `json:"sites"        xml:"sites"`
+}
+
+//Pagination defines the nuber of pages returned by the api
+type Pagination struct {
+	XMLName    xml.Name `json:"-"                         xml:"pagination"`
+	PageNumber int      `json:"pageNumber,omitempty"      xml:"pageNumber"`
+	PageSize   int      `json:"page-size,omitempty"       xml:"page-size"`
+	TotalPages int      `json:"total-available,omitempty" xml:"total-available"`
 }
 
 // ServerInfo contains information about product version and api version for the server
 type ServerInfo struct {
-	XMLName        xml.Name       `json:"-" xml:"serverInfo"`
+	XMLName        xml.Name       `json:"-"                        xml:"serverInfo"`
 	ProductVersion ProductVersion `json:"productVersion,omitempty" xml:"productVersion"`
 	RestApiVersion string         `json:"restApiVersion,omitempty" xml:"restApiVersion,omitempty"`
 }
 
+type Sites struct {
+	XMLName xml.Name   `json:"-"                   xml:"sites"`
+	Site    []SiteType `json:"site,omitempty"      xml:"site,omitempty"`
+}
+
+// SiteType is site detail and can be a list under Sites or info under other response details
 type SiteType struct {
 	XMLName      xml.Name `json:"-"                       xml:"site"`
 	ID           string   `json:"id,omitempty"            xml:"id,attr,omitempty"`
@@ -49,6 +63,7 @@ type Credentials struct {
 	Site        *SiteType `json:"site,omitempty"      xml:"site,omitempty"`
 	Impersonate *User     `json:"user,omitempty"      xml:"user,omitempty"`
 }
+
 type ProductVersion struct {
 	XMLName xml.Name `json:"-"      xml:"productVersion"`
 	Value   string   `json:"value"  xml:",chardata"`
@@ -63,33 +78,38 @@ type User struct {
 	FullName string   `json:"fullName,omitempty"  xml:"fullName,attr,omitempty"`
 }
 
+type Users struct {
+	XMLName xml.Name `json:"-"                   xml:"users"`
+	User    []User   `json:"user"                xml:"user"`
+}
+
 type Workbook struct {
-	XMLName     xml.Name `json:"-"                   xml:"workbook"`
-	ID          string   `json:"id,omitempty"        xml:"id,attr,omitempty"`
-	Name        string   `json:"name,omitempty"      xml:"name,attr,omitempty"`
+	XMLName     xml.Name `json:"-"                      xml:"workbook"`
+	ID          string   `json:"id,omitempty"           xml:"id,attr,omitempty"`
+	Name        string   `json:"name,omitempty"         xml:"name,attr,omitempty"`
 	Description string   `json:"description,omitempty"  xml:"description,attr,omitempty"`
-	WebPageUrl  string   `json:"webpageurl,omitempty"  xml:"webpageurl,attr,omitempty"`
-	ContentUrl  string   `json:"contentUrl,omitempty"  xml:"contentUrl,attr,omitempty"`
+	WebPageUrl  string   `json:"webpageurl,omitempty"   xml:"webpageurl,attr,omitempty"`
+	ContentUrl  string   `json:"contentUrl,omitempty"   xml:"contentUrl,attr,omitempty"`
 }
 
 type Workbooks struct {
-	XMLName       xml.Name       `json:"-"                   xml:"workbooks"`
+	XMLName       xml.Name       `json:"-"                       xml:"workbooks"`
 	Workbook      []Workbook     `json:"workbook,omitempty"      xml:"workbook,omitempty"`
-	ShowTabs      string         `json:"showTabs,omitempty"        xml:"showTabs,attr,omitempty"`
-	Size          string         `json:"size,omitempty"        xml:"size,attr,omitempty"`
-	CreatedAt     string         `json:"createdAt,omitempty"        xml:"createdAt,attr,omitempty"`
-	UpdatedAt     string         `json:"updatedAt,omitempty"        xml:"updatedAt,attr,omitempty"`
-	DefaultViewId *DefaultViewId `json:"defaultViewId,omitempty"        xml:"defaultViewId,attr,omitempty"`
+	ShowTabs      string         `json:"showTabs,omitempty"      xml:"showTabs,attr,omitempty"`
+	Size          string         `json:"size,omitempty"          xml:"size,attr,omitempty"`
+	CreatedAt     string         `json:"createdAt,omitempty"     xml:"createdAt,attr,omitempty"`
+	UpdatedAt     string         `json:"updatedAt,omitempty"     xml:"updatedAt,attr,omitempty"`
+	DefaultViewId *DefaultViewId `json:"defaultViewId,omitempty" xml:"defaultViewId,attr,omitempty"`
 }
 
 type DefaultViewId struct {
-	XMLName xml.Name `json:"-"                   xml:"defaultViewId"`
+	XMLName xml.Name `json:"-"        xml:"defaultViewId"`
 	Project struct {
 		ID   string `json:"id,omitempty"        xml:"id,attr,omitempty"`
 		Name string `json:"name,omitempty"      xml:"name,attr,omitempty"`
 	}
 	Owner struct {
-		ID string `json:"id,omitempty"        xml:"id,attr,omitempty"`
+		ID string `json:"id,omitempty"          xml:"id,attr,omitempty"`
 	}
 }
 
