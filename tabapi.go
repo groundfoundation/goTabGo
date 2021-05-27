@@ -227,6 +227,37 @@ func (t *TabApi) ListReportsForUser(u *model.User) (w []model.Workbook, err erro
 	return
 }
 
+func (t *TabApi) QuerySites() (w []model.SiteType, err error) {
+	log.WithField("method", "QuerySites").Debug("Finding Sites")
+	url := fmt.Sprintf("%s/api/%s/sites", t.getUrl(), t.ApiVersion)
+	r, e := t.c.Get(url)
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+	log.WithField("method", "QuerySites").Debugf("Raw Response: %s", r)
+	defer r.Body.Close()
+	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil {
+		return nil, err
+	}
+	contentType, err := ContentTypeString(ctStr)
+	var tResponse model.TsResponse
+	err = putResponse(r.Body, &tResponse, contentType)
+	if err != nil {
+		return nil, err
+	}
+	log.WithField("method", "QuerySites").Debugf("ResponseStruct: %s", tResponse)
+	if x, err := xml.Marshal(tResponse); err != nil {
+		log.WithField("method", "QuerySites").
+			Debugf("ServerInfoResponse - XML: %s", x)
+	}
+
+	w = tResponse.Sites.Site
+
+	return
+}
+
 func (t *TabApi) getUrl() string {
 	url := "http"
 	if t.UseTLS {
