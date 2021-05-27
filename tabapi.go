@@ -178,6 +178,19 @@ func (t *TabApi) QueryUserOnSite(user string) (u *model.User, err error) {
 		log.WithField("method", "QueryUserOnSite").
 			Debug("ServerInfoResponse - XML:\n", x)
 	}
+
+	if len(tResponse.Users.User) > 1 {
+		log.WithField("method", "QueryUserOnSite").
+			Errorf("Too many users returned: %v", tResponse.Users.User)
+		return nil, errors.New("Incorrect number of users found: %v")
+	}
+
+	if len(tResponse.Users.User) == 0 {
+		log.WithField("method", "QueryUserOnSite").
+			Errorf("User Not Found: %s:%v", user, tResponse.Users.User)
+		return nil, errors.New("User Not Found: %v")
+	}
+
 	u = &tResponse.Users.User[0]
 
 	return
