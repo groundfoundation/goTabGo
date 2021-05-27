@@ -22,6 +22,7 @@ func main() {
 	if server == "" {
 		fmt.Print("Enter Server: ")
 		server, _ = reader.ReadString('\n')
+		server = strings.Replace(server, "\n", "", -1)
 	}
 	log.Debug("Server: ", server)
 
@@ -29,6 +30,7 @@ func main() {
 	if user == "" {
 		fmt.Print("Enter User: ")
 		user, _ = reader.ReadString('\n')
+		user = strings.Replace(user, "\n", "", -1)
 	}
 	log.Debug("User: ", user)
 
@@ -40,12 +42,13 @@ func main() {
 			log.Fatal(e)
 		}
 		password = string(pwd)
+		password = strings.Replace(password, "\n", "", -1)
 	}
 	log.Debug("Password value obtained")
 
 	apiVer = os.Getenv("TABLEAU_API_VERSION")
 	if apiVer == "" {
-		apiVer = "3.9"
+		apiVer = "3.7"
 	}
 	log.Debug("API Version:", apiVer)
 
