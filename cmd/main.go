@@ -99,6 +99,13 @@ func main() {
 	}
 	fmt.Printf("\nTicket: %s\n", ticket.Value)
 
+	// Let's list all sites
+	fmt.Print("\nListing sites:")
+	siteList, err := tabApi.QuerySites()
+	for _, s := range siteList {
+		fmt.Printf("\nSite: %v : %v\n", s.Name, s.ContentUrl)
+	}
+
 	// Let's list reports for a user
 	fmt.Printf("\nChecking for user: %s\n", userName)
 	userStruct, err := tabApi.QueryUserOnSite(userName)
