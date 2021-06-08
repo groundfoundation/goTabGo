@@ -44,6 +44,17 @@ func NewTabApi(server, version string, useTLS bool, cType ContentType) (*TabApi,
 
 }
 
+func (t *TabApi) Signout() (err error) {
+	var payload []byte
+	url := fmt.Sprintf("%s/api/%s/auth/signout", t.getUrl(), t.ApiVersion)
+	resp, err := t.c.Post(url, t.ContentType.String(), bytes.NewBuffer(payload))
+	if err != nil {
+		return
+	}
+	log.WithField("method", "Signout").Debug(resp)
+	return
+}
+
 // Signin authenticates a user and retrieves an auth token
 func (t *TabApi) Signin(username, password, contentUrl, impersonateUser string) (err error) {
 	url := fmt.Sprintf("%s/api/%s/auth/signin", t.getUrl(), t.ApiVersion)
@@ -188,7 +199,7 @@ func (t *TabApi) QueryUserOnSite(user string) (u *model.User, err error) {
 	if len(tResponse.Users.User) == 0 {
 		log.WithField("method", "QueryUserOnSite").
 			Errorf("User Not Found: %s:%v", user, tResponse.Users.User)
-		return nil, errors.New("User Not Found: %v")
+		return nil, errors.New("User Not Found on site")
 	}
 
 	u = &tResponse.Users.User[0]
@@ -235,7 +246,7 @@ func (t *TabApi) QuerySites() (w []model.SiteType, err error) {
 		log.Error(e)
 		return nil, e
 	}
-	log.WithField("method", "QuerySites").Debugf("Raw Response: %s", r)
+	//log.WithField("method", "QuerySites").Debugf("Raw Response: %s", r)
 	defer r.Body.Close()
 	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil {

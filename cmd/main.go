@@ -111,6 +111,7 @@ func main() {
 	userStruct, err := tabApi.QueryUserOnSite(userName)
 	if err != nil {
 		log.Error(err.Error())
+		return
 	}
 	fmt.Printf("\nListing Reports for ID: %s\n", userStruct.ID)
 	workbooks, err := tabApi.ListReportsForUser(userStruct)
@@ -120,6 +121,14 @@ func main() {
 	for _, workbook := range workbooks {
 		fmt.Printf("\nWorkbook: %v\n", workbook.Name)
 	}
+	//signout
+	e = tabApi.Signout()
+	if e != nil {
+		log.Error(err.Error())
+		return
+	}
+	fmt.Printf("\nSigned out: %s\n Test Complete\n", userStruct.ID)
+
 }
 
 func init() {
