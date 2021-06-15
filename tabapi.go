@@ -116,7 +116,7 @@ func (t *TabApi) NewTrustedTicket(ttr model.TrustedTicketRequest) (tt model.Trus
 	data.Set("target_site", ttr.Targetsite)
 	payload := strings.NewReader(data.Encode())
 	var ctype ContentType = Form
-	resp, err := t.c.Post(purl, ctype.String(), payload)
+	resp, err := t.c.PostWithIP(purl, ctype.String(), payload)
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		err = errors.New("Failed: " + resp.Status)
