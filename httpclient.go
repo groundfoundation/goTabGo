@@ -39,6 +39,7 @@ func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.R
 func (c *httpClient) PostWithIP(url, contentType string, body io.Reader) (resp *http.Response, err error) {
 	localIp := GetOutboundIP(url).String()
 	log.WithField("Method", "httpclient.PostWithIP").Debugf("LocalIP: %s", localIp)
+	log.Printf("LocalIP: %s", localIp)
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		return nil, err
