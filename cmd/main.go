@@ -120,6 +120,12 @@ func main() {
 	}
 	for _, workbook := range workbooks {
 		fmt.Printf("\nWorkbook: %v\n", workbook.Name)
+		view, err := tabApi.GetViewById(workbook.DefaultViewId)
+		if err != nil {
+			log.Error(err.Error())
+		}
+		fmt.Printf("\n\tview Name: %s", view.Name)
+		fmt.Printf("\n\tview URL: %s", view.ContentUrl)
 	}
 	//signout
 	e = tabApi.Signout()

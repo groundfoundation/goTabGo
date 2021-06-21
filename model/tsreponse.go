@@ -8,6 +8,7 @@ type TsResponse struct {
 	Pagination  Pagination  `json:"pagination"   xml:"pagination"`
 	ServerInfo  ServerInfo  `json:"serverInfo"   xml:"serverInfo"`
 	Workbooks   Workbooks   `json:"workbooks"    xml:"workbooks"`
+	View        *View       `json:"view"    xml:"view"`
 	Users       Users       `json:"users"        xml:"users"`
 	Credentials Credentials `json:"credentials"  xml:"credentials"`
 	Error       ErrorType   `json:"error"        xml:"error"`
@@ -84,33 +85,57 @@ type Users struct {
 }
 
 type Workbook struct {
-	XMLName     xml.Name `json:"-"                      xml:"workbook"`
-	ID          string   `json:"id,omitempty"           xml:"id,attr,omitempty"`
-	Name        string   `json:"name,omitempty"         xml:"name,attr,omitempty"`
-	Description string   `json:"description,omitempty"  xml:"description,attr,omitempty"`
-	WebPageUrl  string   `json:"webpageurl,omitempty"   xml:"webpageurl,attr,omitempty"`
-	ContentUrl  string   `json:"contentUrl,omitempty"   xml:"contentUrl,attr,omitempty"`
+	XMLName       xml.Name `json:"-"                      xml:"workbook"`
+	ID            string   `json:"id,omitempty"           xml:"id,attr,omitempty"`
+	Name          string   `json:"name,omitempty"         xml:"name,attr,omitempty"`
+	Description   string   `json:"description,omitempty"  xml:"description,attr,omitempty"`
+	WebPageUrl    string   `json:"webpageurl,omitempty"   xml:"webpageurl,attr,omitempty"`
+	ContentUrl    string   `json:"contentUrl,omitempty"   xml:"contentUrl,attr,omitempty"`
+	ShowTabs      string   `json:"showTabs,omitempty"      xml:"showTabs,attr,omitempty"`
+	Size          string   `json:"size,omitempty"          xml:"size,attr,omitempty"`
+	CreatedAt     string   `json:"createdAt,omitempty"     xml:"createdAt,attr,omitempty"`
+	UpdatedAt     string   `json:"updatedAt,omitempty"     xml:"updatedAt,attr,omitempty"`
+	DefaultViewId string   `json:"defaultViewId,omitempty" xml:"defaultViewId,attr,omitempty"`
 }
 
 type Workbooks struct {
-	XMLName       xml.Name       `json:"-"                       xml:"workbooks"`
-	Workbook      []Workbook     `json:"workbook,omitempty"      xml:"workbook,omitempty"`
-	ShowTabs      string         `json:"showTabs,omitempty"      xml:"showTabs,attr,omitempty"`
-	Size          string         `json:"size,omitempty"          xml:"size,attr,omitempty"`
-	CreatedAt     string         `json:"createdAt,omitempty"     xml:"createdAt,attr,omitempty"`
-	UpdatedAt     string         `json:"updatedAt,omitempty"     xml:"updatedAt,attr,omitempty"`
-	DefaultViewId *DefaultViewId `json:"defaultViewId,omitempty" xml:"defaultViewId,attr,omitempty"`
+	XMLName  xml.Name   `json:"-"                       xml:"workbooks"`
+	Workbook []Workbook `json:"workbook,omitempty"      xml:"workbook,omitempty"`
+	Project  *Project   `json:"project,omitempty" xml:"project,attr,omitempty"`
+	Owner    *Owner     `json:"owner,omitempty" xml:"owner,attr,omitempty"`
+}
+
+type View struct {
+	XMLName    xml.Name `json:"-"                      xml:"view"`
+	ID         string   `json:"id,omitempty"           xml:"id,attr,omitempty"`
+	Name       string   `json:"name,omitempty"         xml:"name,attr,omitempty"`
+	ContentUrl string   `json:"contentUrl,omitempty"   xml:"contentUrl,attr,omitempty"`
+	CreatedAt  string   `json:"createdAt,omitempty"     xml:"createdAt,attr,omitempty"`
+	UpdatedAt  string   `json:"updatedAt,omitempty"     xml:"updatedAt,attr,omitempty"`
+	Usage      struct {
+		TotalViewCount uint `json:"totalViewCount"                xml:"totalViewCount,attr"`
+	}
+	Workbook *Workbook `json:"workbook,omitempty"               xml:"workbook,attr,omitempty"`
+	Owner    *Owner    `json:"owner,omitempty"               xml:"owner,attr,omitempty"`
+	Project  *Project  `json:"project,omitempty"               xml:project,attr,omitempty"`
+}
+
+type Views struct {
+	XMLName xml.Name `json:"-"                       xml:"views"`
+	View    []View   `json:"workbook,omitempty"      xml:"view,omitempty"`
+}
+
+type Project struct {
+	ID   string `json:"id,omitempty"        xml:"id,attr,omitempty"`
+	Name string `json:"name,omitempty"      xml:"name,attr,omitempty"`
+}
+
+type Owner struct {
+	ID string `json:"id,omitempty"          xml:"id,attr,omitempty"`
 }
 
 type DefaultViewId struct {
 	XMLName xml.Name `json:"-"        xml:"defaultViewId"`
-	Project struct {
-		ID   string `json:"id,omitempty"        xml:"id,attr,omitempty"`
-		Name string `json:"name,omitempty"      xml:"name,attr,omitempty"`
-	}
-	Owner struct {
-		ID string `json:"id,omitempty"          xml:"id,attr,omitempty"`
-	}
 }
 
 type ErrorType struct {

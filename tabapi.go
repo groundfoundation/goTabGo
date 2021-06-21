@@ -227,7 +227,7 @@ func (t *TabApi) ListReportsForUser(u *model.User) (w []model.Workbook, err erro
 	if err != nil {
 		return nil, err
 	}
-	log.WithField("method", "ListReportsForUser").Debug("ServerInfoResponse:\n", tResponse)
+	log.WithField("method", "ListReportsForUser").Debug("getWorkbookResponse:\n", tResponse)
 	if x, err := xml.Marshal(tResponse); err != nil {
 		log.WithField("method", "ListReportsForUser").
 			Debug("ServerInfoResponse - XML:\n", x)
@@ -236,6 +236,38 @@ func (t *TabApi) ListReportsForUser(u *model.User) (w []model.Workbook, err erro
 	w = tResponse.Workbooks.Workbook
 
 	return
+}
+
+func (t *TabApi) GetViewById(id string) (view *model.View, err error) {
+	log.WithField("method", "getViewById").Debug("Getting view ID :", id)
+	url := fmt.Sprintf("%s/api/%s/sites/%s/views/%s", t.getUrl(), t.ApiVersion, t.SiteID, id)
+	r, e := t.c.Get(url)
+	if e != nil {
+		log.Error(e)
+		return nil, e
+	}
+	log.WithField("method", "getViewById").Debug("response:\n", r)
+	defer r.Body.Close()
+	ctStr, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil {
+		return nil, err
+	}
+	contentType, err := ContentTypeString(ctStr)
+	var tResponse model.TsResponse
+	err = putResponse(r.Body, &tResponse, contentType)
+	if err != nil {
+		return nil, err
+	}
+	log.WithField("method", "getViewById").Debug("getViewResponse:\n", tResponse)
+	if x, err := xml.Marshal(tResponse); err != nil {
+		log.WithField("method", "getViewById").
+			Debug("ServerInfoResponse - XML:\n", x)
+	}
+
+	view = tResponse.View
+
+	return
+
 }
 
 func (t *TabApi) QuerySites() (w []model.SiteType, err error) {
